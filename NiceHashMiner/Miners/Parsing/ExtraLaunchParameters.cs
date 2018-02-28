@@ -302,7 +302,32 @@ namespace NiceHashMiner.Miners.Parsing
                     new MinerOption("dtsm_noreconnect", "--noreconnect", null, MinerOptionFlagType.Uni),
                     new MinerOption("dtsm_temp-target", "--temp-target", null, MinerOptionFlagType.SingleParam)
                 },
-                new List<MinerOption>())
+                new List<MinerOption>()),
+            new MinerOptionPackage(
+                MinerType.mkxminer,
+                new List<MinerOption>
+                {
+                    new MinerOption("mkxminer_asm", "--asm", null, MinerOptionFlagType.Uni),
+                    new MinerOption("mkxminer_intensity", "-I", "--intensity", null, MinerOptionFlagType.MultiParam, ","),
+                    new MinerOption("mkxminer_exitsick", "--existsick", null, MinerOptionFlagType.Uni),
+                    new MinerOption("mkxminer_platform", "--platform", null, MinerOptionFlagType.SingleParam),
+                    new MinerOption("mkxminer_map", "--map", null, MinerOptionFlagType.SingleParam),
+
+                    // OC options
+                    new MinerOption("mkxminer_memclock", "--memclock", null, MinerOptionFlagType.MultiParam, ","),
+                    new MinerOption("mkxminer_engine", "--engine", null, MinerOptionFlagType.MultiParam, ","),
+                    new MinerOption("mkxminer_powertune", "--powertune", null, MinerOptionFlagType.MultiParam, ","),
+                    new MinerOption("mkxminer_vddc", "--vddc", null, MinerOptionFlagType.MultiParam, ","),
+                    new MinerOption("mkxminer_autogpu", "--auto-gpu", null, MinerOptionFlagType.Uni)
+                },
+                // Temp options
+                new List<MinerOption>
+                {
+                    new MinerOption("mkxminer_autofan", "--auto-fan", null, MinerOptionFlagType.Uni),
+                    new MinerOption("mkxminer_tempcut", "--temp-cutoff", null, MinerOptionFlagType.MultiParam, ","),
+                    new MinerOption("mkxminer_tempover", "--temp-overheat", null, MinerOptionFlagType.MultiParam, ","),
+                    new MinerOption("mkxminer_temptarget", "--temp-target", null, MinerOptionFlagType.MultiParam, ",")
+                })
         };
 
         private static readonly List<MinerOptionPackage> MinerOptionPackages = new List<MinerOptionPackage>();

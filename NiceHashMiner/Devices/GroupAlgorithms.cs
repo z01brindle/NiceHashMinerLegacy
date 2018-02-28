@@ -120,6 +120,15 @@ namespace NiceHashMiner.Devices
                     }
                 }
 
+                if (algoSettings.ContainsKey(MinerBaseType.mkxminer))
+                {
+                    foreach (var algo in algoSettings[MinerBaseType.mkxminer])
+                    {
+                        // Set def intensity to 20
+                        algo.ExtraLaunchParameters = "-I 20";
+                    }
+                }
+
                 // drivers algos issue
                 if (device.DriverDisableAlgos)
                 {
