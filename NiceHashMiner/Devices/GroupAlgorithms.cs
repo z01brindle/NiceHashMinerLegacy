@@ -122,10 +122,26 @@ namespace NiceHashMiner.Devices
 
                 if (algoSettings.ContainsKey(MinerBaseType.mkxminer))
                 {
+                    var highIntensityNames = new List<string>
+                    {
+                        "Hawaii",
+                        "Fiji",
+                        "Ellesmere",
+                        "Vega"
+                    };
+                    var i = 20;
+                    foreach (var high in highIntensityNames)
+                    {
+                        if (device.Codename.Contains(high))
+                        {
+                            i = 23;
+                            break;
+                        }
+                    }
                     foreach (var algo in algoSettings[MinerBaseType.mkxminer])
                     {
                         // Set def intensity to 20
-                        algo.ExtraLaunchParameters = "-I 20";
+                        algo.ExtraLaunchParameters = $"-I {i}";
                     }
                 }
 
