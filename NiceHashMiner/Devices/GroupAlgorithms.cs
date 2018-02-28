@@ -125,8 +125,7 @@ namespace NiceHashMiner.Devices
                 {
                     algoSettings = FilterMinerAlgos(algoSettings, new List<AlgorithmType>
                     {
-                        AlgorithmType.NeoScrypt,
-                        AlgorithmType.Lyra2REv2
+                        AlgorithmType.NeoScrypt
                     });
                 }
 
@@ -337,12 +336,14 @@ namespace NiceHashMiner.Devices
                                 new Algorithm(MinerBaseType.Prospector, AlgorithmType.Skunk, "sigt"),
                                 new Algorithm(MinerBaseType.Prospector, AlgorithmType.Sia, "sia")
                             }
+                        },
+                        {
+                            MinerBaseType.mkxminer,
+                            new List<Algorithm>
+                            {
+                                new Algorithm(MinerBaseType.mkxminer, AlgorithmType.Lyra2REv2, "")
+                            }
                         }
-                        //{ MinerBaseType.XmrStakAMD,
-                        //    new List<Algorithm> {
-                        //        new Algorithm(MinerBaseType.XmrStakAMD, AlgorithmType.CryptoNight, "")
-                        //    }
-                        //}
                     };
                 case DeviceGroupType.NVIDIA_2_1:
                 case DeviceGroupType.NVIDIA_3_x:

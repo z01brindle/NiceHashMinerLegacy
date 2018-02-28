@@ -75,6 +75,8 @@ namespace NiceHashMiner.Miners
                     return new ClaymoreCryptoNightMiner(true);
                 case MinerBaseType.dtsm:
                     return new Dtsm();
+                case MinerBaseType.mkxminer:
+                    return new MkxMiner();
             }
             return null;
         }

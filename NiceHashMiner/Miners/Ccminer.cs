@@ -149,44 +149,7 @@ namespace NiceHashMiner.Miners
         public override async Task<ApiData> GetSummaryAsync()
         {
             // CryptoNight does not have api bind port
-            if (!IsApiReadException) return await GetSummaryCpuCcminerAsync();
-            // check if running
-            if (ProcessHandle == null)
-            {
-                CurrentMinerReadStatus = MinerApiReadStatus.RESTART;
-                Helpers.ConsolePrint(MinerTag(), ProcessTag() + " Could not read data from CryptoNight Proccess is null");
-                return null;
-            }
-            try
-            {
-                Process.GetProcessById(ProcessHandle.Id);
-            }
-            catch (ArgumentException ex)
-            {
-                CurrentMinerReadStatus = MinerApiReadStatus.RESTART;
-                Helpers.ConsolePrint(MinerTag(), ProcessTag() + " Could not read data from CryptoNight reason: " + ex.Message);
-                return null; // will restart outside
-            }
-            catch (InvalidOperationException ex)
-            {
-                CurrentMinerReadStatus = MinerApiReadStatus.RESTART;
-                Helpers.ConsolePrint(MinerTag(), ProcessTag() + " Could not read data from CryptoNight reason: " + ex.Message);
-                return null; // will restart outside
-            }
-
-            var totalSpeed = MiningSetup.MiningPairs
-                .Select(miningPair =>
-                    miningPair.Device.GetAlgorithm(MinerBaseType.ccminer, AlgorithmType.CryptoNight, AlgorithmType.NONE))
-                .Where(algo => algo != null).Sum(algo => algo.BenchmarkSpeed);
-
-            var cryptoNightData = new ApiData(MiningSetup.CurrentAlgorithmType)
-            {
-                Speed = totalSpeed
-            };
-            CurrentMinerReadStatus = MinerApiReadStatus.GOT_READ;
-            // check if speed zero
-            if (cryptoNightData.Speed == 0) CurrentMinerReadStatus = MinerApiReadStatus.READ_SPEED_ZERO;
-            return cryptoNightData;
+            return IsApiReadException ? GetExceptionSummary() : await GetSummaryCpuCcminerAsync();
         }
     }
 }

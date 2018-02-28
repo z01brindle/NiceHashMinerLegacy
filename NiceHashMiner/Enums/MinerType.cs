@@ -22,6 +22,7 @@
         EWBF,
         Xmrig,
         dtsm,
+        mkxminer,
         END
     }
 }

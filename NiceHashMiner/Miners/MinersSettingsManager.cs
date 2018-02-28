@@ -3,6 +3,7 @@ using NiceHashMiner.Devices;
 using NiceHashMiner.Enums;
 using NiceHashMiner.Miners.Grouping;
 using NiceHashMiner.Miners.Parsing;
+using System;
 using System.Collections.Generic;
 
 namespace NiceHashMiner.Miners
@@ -131,52 +132,45 @@ namespace NiceHashMiner.Miners
         {
             var file = new MinerSystemVariablesFile();
             MinerSystemVariables = new Dictionary<string, Dictionary<string, string>>();
-            var isFileInit = false;
             if (file.IsFileExists())
             {
                 var read = file.ReadFile();
                 if (read != null)
                 {
-                    isFileInit = true;
                     MinerSystemVariables = read;
                 }
             }
-            if (!isFileInit)
+
+            // key is path, value is whether or not we set GPU_FORCE_64BIT_PTR to 1
+            var pathsPtrDict = new Dictionary<string, bool>
             {
-                // general AMD defaults scope
+                { MinerPaths.Data.Sgminer560General, true },
+                { MinerPaths.Data.SgminerGm, true },
+                { MinerPaths.Data.ClaymoreZcashMiner, true },
+                { MinerPaths.Data.OptiminerZcashMiner, true },
+                { MinerPaths.Data.ClaymoreCryptoNightMiner, false },
+                { MinerPaths.Data.MkxMiner, false }
+            };
+            // This method allows non-present paths to be added when upgrading from prev ver
+            var isChanged = false;
+            foreach (var path in pathsPtrDict.Keys)
+            {
+                if (!MinerSystemVariables.ContainsKey(path))
                 {
-                    var minerPaths = new List<string>()
-                    {
-                        MinerPaths.Data.Sgminer560General,
-                        MinerPaths.Data.SgminerGm,
-                        MinerPaths.Data.ClaymoreCryptoNightMiner,
-                        MinerPaths.Data.ClaymoreZcashMiner,
-                        MinerPaths.Data.OptiminerZcashMiner
-                    };
-                    foreach (var minerPath in minerPaths)
-                    {
-                        MinerSystemVariables[minerPath] = new Dictionary<string, string>()
-                        {
-                            {"GPU_MAX_ALLOC_PERCENT", "100"},
-                            {"GPU_USE_SYNC_OBJECTS", "1"},
-                            {"GPU_SINGLE_ALLOC_PERCENT", "100"},
-                            {"GPU_MAX_HEAP_SIZE", "100"},
-                            {"GPU_FORCE_64BIT_PTR", "1"}
-                        };
-                    }
-                }
-                // ClaymoreDual scope
-                {
-                    MinerSystemVariables[MinerPaths.Data.ClaymoreDual] = new Dictionary<string, string>()
+                    MinerSystemVariables[path] = new Dictionary<string, string>
                     {
                         {"GPU_MAX_ALLOC_PERCENT", "100"},
                         {"GPU_USE_SYNC_OBJECTS", "1"},
                         {"GPU_SINGLE_ALLOC_PERCENT", "100"},
                         {"GPU_MAX_HEAP_SIZE", "100"},
-                        {"GPU_FORCE_64BIT_PTR", "0"}
+                        {"GPU_FORCE_64BIT_PTR", Convert.ToInt32(pathsPtrDict[path]).ToString()}
                     };
+                    isChanged = true;
                 }
-                // save defaults
+            }
+            if (isChanged)
+            {
+                // save defaults/additions
                 file.Commit(MinerSystemVariables);
             }
         }

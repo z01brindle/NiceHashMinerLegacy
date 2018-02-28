@@ -872,11 +872,15 @@ namespace NiceHashMiner
             }
             if (MinersSettingsManager.MinerSystemVariables.ContainsKey(Path))
             {
+                // Setting startinfo vars has no effect under NHProcess, so set app vars before launch
                 foreach (var kvp in MinersSettingsManager.MinerSystemVariables[Path])
                 {
                     var envName = kvp.Key;
                     var envValue = kvp.Value;
-                    P.StartInfo.EnvironmentVariables[envName] = envValue;
+                    try
+                    {
+                        Environment.SetEnvironmentVariable(envName, envValue);
+                    } catch { }
                 }
             }
 
@@ -1157,6 +1161,48 @@ namespace NiceHashMiner
             if (ad.Speed == 0) CurrentMinerReadStatus = MinerApiReadStatus.READ_SPEED_ZERO;
 
             return ad;
+        }
+
+        /// <summary>
+        /// Verify process is still running, and return placeholder ApiData
+        /// </summary>
+        /// <returns>Placeholder ApiData with benchmarked value for speed</returns>
+        protected ApiData GetExceptionSummary()
+        {
+            // check if running
+            if (ProcessHandle == null)
+            {
+                CurrentMinerReadStatus = MinerApiReadStatus.RESTART;
+                Helpers.ConsolePrint(MinerTag(), ProcessTag() + $" Could not read data from {MinerDeviceName} is null");
+                return null;
+            }
+            try
+            {
+                Process.GetProcessById(ProcessHandle.Id);
+            } catch (ArgumentException ex)
+            {
+                CurrentMinerReadStatus = MinerApiReadStatus.RESTART;
+                Helpers.ConsolePrint(MinerTag(), ProcessTag() + $" Could not read data from {MinerDeviceName} reason: " + ex.Message);
+                return null; // will restart outside
+            } catch (InvalidOperationException ex)
+            {
+                CurrentMinerReadStatus = MinerApiReadStatus.RESTART;
+                Helpers.ConsolePrint(MinerTag(), ProcessTag() + $" Could not read data from {MinerDeviceName} reason: " + ex.Message);
+                return null; // will restart outside
+            }
+
+            var totalSpeed = MiningSetup.MiningPairs
+                .Select(miningPair => miningPair.Algorithm)
+                .Sum(algo => algo.BenchmarkSpeed);
+
+            var exceptionNightData = new ApiData(MiningSetup.CurrentAlgorithmType)
+            {
+                Speed = totalSpeed
+            };
+            CurrentMinerReadStatus = MinerApiReadStatus.GOT_READ;
+            // check if speed zero
+            if (exceptionNightData.Speed == 0) CurrentMinerReadStatus = MinerApiReadStatus.READ_SPEED_ZERO;
+            return exceptionNightData;
         }
 
 

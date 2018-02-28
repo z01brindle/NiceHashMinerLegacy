@@ -106,6 +106,7 @@
     <Compile Include="Miners\ClaymoreDual.cs" />
     <Compile Include="Miners\Equihash\Dtsm.cs" />
     <Compile Include="Miners\Ewbf.cs" />
+    <Compile Include="Miners\MkxMiner.cs" />
     <Compile Include="Miners\Prospector.cs" />
     <Compile Include="Miners\XmrStak\XmrStak.cs" />
     <Compile Include="Miners\XmrStak\XmrStakAMD.cs" />
